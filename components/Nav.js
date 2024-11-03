@@ -6,10 +6,11 @@ export default function Nav() {
   const activeLink = inactiveLink + " bg-white text-blue-900 rounded-l-lg";
 
   const router = useRouter();
+  const pathname = router.pathname;
 
   return (
-    <aside className="text-white p-4">
-      <Link href={"/"} className="flex gap-1 mb-4">
+    <aside className="text-white p-4 pr-0">
+      <Link href={"/"} className="flex gap-1 mb-4 mr-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -49,9 +50,7 @@ export default function Nav() {
         </Link>
         <Link
           href={"/products"}
-          className={
-            router.pathname === "/products" ? activeLink : inactiveLink
-          }
+          className={pathname.includes("/products") ? activeLink : inactiveLink}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -71,7 +70,7 @@ export default function Nav() {
         </Link>
         <Link
           href={"/orders"}
-          className={router.pathname === "/orders" ? activeLink : inactiveLink}
+          className={pathname.includes("/orders") ? activeLink : inactiveLink}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -90,8 +89,8 @@ export default function Nav() {
           Objednávky
         </Link>
         <Link
-          href={"/setting"}
-          className={router.pathname === "/setting" ? activeLink : inactiveLink}
+          href={"/settings"}
+          className={pathname.includes("/settings") ? activeLink : inactiveLink}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
