@@ -12,10 +12,11 @@ export default async function handleCategories(req, res) {
 
   if (method === "POST") {
     try {
-      const { name, parentCategory } = req.body;
+      const { name, parentCategory, properties } = req.body;
       const categoryDoc = await Category.create({
         name,
-        parent: parentCategory,
+        parent: parentCategory || undefined,
+        properties: properties,
       });
       return res.json(categoryDoc);
     } catch (error) {
@@ -26,13 +27,14 @@ export default async function handleCategories(req, res) {
 
   if (method === "PUT") {
     try {
-      const { name, parentCategory, _id } = req.body;
+      const { name, parentCategory, properties, _id } = req.body;
       //{first obj what you want to update} then {obj of the new data}
       const categoryDoc = await Category.updateOne(
         { _id: _id },
         {
           name,
-          parent: parentCategory,
+          parent: parentCategory || undefined,
+          properties,
         }
       );
       return res.json(categoryDoc);

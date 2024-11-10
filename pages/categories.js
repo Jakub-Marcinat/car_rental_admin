@@ -8,6 +8,7 @@ function Categories({ swal }) {
   const [categories, setCategories] = useState([]);
   const [parentCategory, setParentCategory] = useState("");
   const [editedCategory, setEditedCategory] = useState(null);
+  const [properties, setProperties] = useState([]);
 
   useEffect(() => {
     fetchCategories();
@@ -21,16 +22,24 @@ function Categories({ swal }) {
 
   async function saveCategory(ev) {
     ev.preventDefault();
-    const data = { name, parentCategory };
-    if (editCategory) {
+    const data = {
+      name,
+      parentCategory,
+      properties: properties.map((p) => ({
+        name: p.name,
+        values: p.values.split(","),
+      })),
+    };
+    if (editedCategory) {
       data._id = editedCategory._id;
       await axios.put("/api/categories", data);
       setEditedCategory(null);
     } else {
       await axios.post("/api/categories", data);
     }
-
-    setName(""); // Clear the input field after successful submission
+    setName(""); // Clear the input field after successfull submission
+    setParentCategory("");
+    setProperties([]);
     fetchCategories();
   }
 
@@ -38,6 +47,12 @@ function Categories({ swal }) {
     setEditedCategory(category);
     setName(category.name);
     setParentCategory(category.parent?._id);
+    setProperties(
+      category.properties.map(({ name, values }) => ({
+        name,
+        values: values.join(","),
+      }))
+    );
   }
 
   function deleteCategory(category) {
@@ -60,6 +75,36 @@ function Categories({ swal }) {
       });
   }
 
+  function addProperty() {
+    setProperties((prev) => {
+      return [...prev, { name: "", values: "" }];
+    });
+  }
+
+  function handlePropertyNameChange(index, property, newName) {
+    setProperties((prev) => {
+      const properties = [...prev];
+      properties[index].name = newName;
+      return properties;
+    });
+  }
+
+  function handlePropertyValuesChange(index, property, newValues) {
+    setProperties((prev) => {
+      const properties = [...prev];
+      properties[index].values = newValues;
+      return properties;
+    });
+  }
+
+  function removeProperty(indexToRemove) {
+    setProperties((prev) => {
+      return [...prev].filter((p, pIndex) => {
+        return pIndex !== indexToRemove;
+      });
+    });
+  }
+
   return (
     <Layout>
       <div>
@@ -70,64 +115,129 @@ function Categories({ swal }) {
               ? `Uprav kategóriu "${editedCategory.name}"`
               : "Vytvor novú kategóriu"}{" "}
           </label>
-          <form onSubmit={saveCategory} className="flex gap-1">
-            <input
-              type="text"
-              className="mb-0"
-              placeholder={"Category name"}
-              onChange={(ev) => setName(ev.target.value)}
-              value={name}
-            />
-            <select
-              className="mb-0"
-              value={parentCategory}
-              onChange={(ev) => setParentCategory(ev.target.value)}
-            >
-              <option value="">Žiadna sekcia</option>
-              {categories.length > 0 &&
-                categories.map((category) => (
-                  <option key={category._id} value={category._id}>
-                    {category.name}
-                  </option>
+          <form onSubmit={saveCategory}>
+            <div className="flex gap-1">
+              <input
+                type="text"
+                placeholder={"Category name"}
+                onChange={(ev) => setName(ev.target.value)}
+                value={name}
+              />
+              <select
+                value={parentCategory}
+                onChange={(ev) => setParentCategory(ev.target.value)}
+              >
+                <option value="0">Žiadna sekcia</option>
+                {categories.length > 0 &&
+                  categories.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <div className="mb-2">
+              <label className="block">Vlastnosti</label>
+              <button
+                type="button"
+                onClick={addProperty}
+                className="btn-default text-sm mb-2"
+              >
+                Pridaj novú vlastnosť
+              </button>
+              {properties.length > 0 &&
+                properties.map((property, index) => (
+                  <div className="flex gap-1 mb-2">
+                    <input
+                      type="text"
+                      value={property.name}
+                      className="mb-0"
+                      onChange={(ev) =>
+                        handlePropertyNameChange(
+                          index,
+                          property,
+                          ev.target.value
+                        )
+                      }
+                      placeholder="Názov vlastnosti (napr. Palivo)"
+                    />
+                    <input
+                      type="text"
+                      value={property.values}
+                      className="mb-0"
+                      onChange={(ev) =>
+                        handlePropertyValuesChange(
+                          index,
+                          property,
+                          ev.target.value
+                        )
+                      }
+                      placeholder="hodnoty oddelené čiarkou"
+                    />
+                    <button
+                      onClick={() => removeProperty(index)}
+                      type="button"
+                      className="btn-default"
+                    >
+                      Odstrániť
+                    </button>
+                  </div>
                 ))}
-            </select>
-
-            <button type="submit" className="btn-primary py-1 max-h-fit">
-              Ulož
-            </button>
+            </div>
+            <div className="flex gap-1">
+              {editedCategory && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditedCategory(null);
+                    setName("");
+                    setParentCategory("");
+                    setProperties([]);
+                  }}
+                  className="btn-default"
+                >
+                  Zrušiť
+                </button>
+              )}
+              <button type="submit" className="btn-primary py-1 max-h-fit">
+                Ulož
+              </button>
+            </div>
           </form>
-          <table className="basic mt-4">
-            <thead>
-              <tr>
-                <td>Názov kategórie</td>
-                <td>Názov sekcie</td>
-                <td></td>
-              </tr>
-            </thead>
-            <tbody>
-              {categories.length > 0 &&
-                categories.map((category) => (
-                  <tr>
-                    <td>{category.name}</td>
-                    <td>{category?.parent?.name}</td>
-                    <div className="flex gap-2 px-2 py-1">
-                      <button
-                        onClick={() => editCategory(category)}
-                        className="btn-primary"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => deleteCategory(category)}
-                        className="btn-primary"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+          {!editedCategory && (
+            <table className="basic mt-4">
+              <thead>
+                <tr>
+                  <td>Názov kategórie</td>
+                  <td>Názov sekcie</td>
+                  <td></td>
+                </tr>
+              </thead>
+              <tbody>
+                {categories.length > 0 &&
+                  categories.map((category) => (
+                    <tr>
+                      <td>{category.name}</td>
+                      <td>{category?.parent?.name}</td>
+                      <div className="flex gap-2 px-2 py-1">
+                        <button
+                          onClick={() => editCategory(category)}
+                          className="btn-primary"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => deleteCategory(category)}
+                          className="btn-primary"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </Layout>
