@@ -42,6 +42,12 @@ export default async function handleCategories(req, res) {
     }
   }
 
+  if (method === "DELETE") {
+    const { _id } = req.query;
+    await Category.deleteOne({ _id: _id });
+    res.json("ok");
+  }
+
   res.setHeader("Allow", ["POST"]);
   res.status(405).end(`Method ${method} Not Allowed`);
 }
