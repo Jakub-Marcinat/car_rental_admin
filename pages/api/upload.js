@@ -9,7 +9,7 @@ const bucketName = "next-car-rental";
 
 export default async function handleUpload(req, res) {
   await mongooseConnect();
-  await isAdminRequestst(req, res);
+  await isAdminRequest(req, res);
 
   const form = new multiparty.Form();
   const { fields, files } = await new Promise((resolve, reject) => {

@@ -22,8 +22,10 @@ export default function EditProductPage() {
 
   return (
     <Layout>
-      <h1>Upraviť produkt</h1>
-      {productInfo && <ProductForm {...productInfo} />}
+      <div>
+        <h1>Upraviť produkt</h1>
+        {productInfo && <ProductForm {...productInfo} />}
+      </div>
     </Layout>
   );
 }

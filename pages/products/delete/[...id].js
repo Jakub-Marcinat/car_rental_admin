@@ -32,7 +32,7 @@ export default function DeleteProductPage() {
       <div>
         <h1>Chcete naozaj odstrániť&nbsp;&quot;{productInfo?.title}&quot;?</h1>
         <div className="flex gap-2 ">
-          <button className="btn-success" onClick={deleteProduct}>
+          <button className="btn-red" onClick={deleteProduct}>
             Áno
           </button>
           <button className="btn-default" onClick={goBack}>
