@@ -116,7 +116,7 @@ export default function ProductForm({
 
   return (
     <form onSubmit={saveProduct} className="flex flex-col shrink">
-      <label>Názov produktu</label>
+      <label>Názov vozidla</label>
       <input
         type="text"
         placeholder="Názov produktu"

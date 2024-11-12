@@ -22,7 +22,7 @@ export default function Products() {
         <table className="basic mt-2">
           <thead>
             <tr>
-              <td>Názov produktu</td>
+              <td>Názov Vozidla</td>
               <td></td>
             </tr>
           </thead>

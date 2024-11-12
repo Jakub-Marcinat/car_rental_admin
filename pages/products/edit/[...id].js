@@ -23,7 +23,7 @@ export default function EditProductPage() {
   return (
     <Layout>
       <div>
-        <h1>Upraviť produkt</h1>
+        <h1>Upraviť vozidlo</h1>
         {productInfo && <ProductForm {...productInfo} />}
       </div>
     </Layout>
